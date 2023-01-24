@@ -12,6 +12,7 @@ before_script:
   - echo $CI_JOB_TOKEN
   - echo $CI_REGISTRY
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
 
 build:
   stage: build
@@ -19,7 +20,7 @@ build:
     # - change as per your dockerhub and image details below
     - docker build -t dhirajpatra/docker-gitlab-cicd-python-app .
     # - give the dockerhub username and password below, this is not secure, use git-secret
-    - docker login -u "***************" -p "*************"
+    # - docker login -u "***************" -p "*************"
     # - change as per your dockerhub and image details below
     - docker push dhirajpatra/docker-gitlab-cicd-python-app
 
@@ -33,3 +34,6 @@ deploy:
   stage: deploy
   script:
     - echo "Deploying to production... docker-gitlab-cicd-python-app at dockerhub"
+
+after_script:
+  - docker logout
