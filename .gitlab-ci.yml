@@ -1,0 +1,35 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - test
+  - deploy
+
+before_script:
+  - echo $CI_JOB_TOKEN
+  - echo $CI_REGISTRY
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+build:
+  stage: build
+  script:
+    # - change as per your dockerhub and image details below
+    - docker build -t dhirajpatra/docker-gitlab-cicd-python-app .
+    # - give the dockerhub username and password below, this is not secure, use git-secret
+    - docker login -u "***************" -p "*************"
+    # - change as per your dockerhub and image details below
+    - docker push dhirajpatra/docker-gitlab-cicd-python-app
+
+test:
+  stage: test
+  script:
+    # - change as per your dockerhub and image details below
+    - docker run --rm dhirajpatra/docker-gitlab-cicd-python-app pytest
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying to production... docker-gitlab-cicd-python-app at dockerhub"
